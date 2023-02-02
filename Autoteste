@@ -37,6 +37,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import org.firstinspires.ftc.teamcode.PIDGyro.TurnPIDController;
 //import org.firstinspires.ftc.teamcode.PIJuncao.ContourPipeline;
+import org.firstinspires.ftc.teamcode.PIJuncao.ContourPipeline;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -56,7 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous
-public class Autoteste extends LinearOpMode {
+public class Autotest extends LinearOpMode {
 
     private OpenCvCamera webcam;
     Scalar HOT_PINK = new Scalar(196, 23, 112);
@@ -111,7 +112,6 @@ public class Autoteste extends LinearOpMode {
 
 //====================================== Junção ====================================================
 
-    private OpenCvCamera webcam;
 
     private static final int CAMERA_WIDTH = 640; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 360; // height of wanted camera resolution
@@ -161,7 +161,7 @@ public class Autoteste extends LinearOpMode {
     public void runOpMode() {
 
         initHardware();
-
+        juncaoInit2();
 //        JuncaoInit();
 
 //        idQRCode();
@@ -187,8 +187,10 @@ public class Autoteste extends LinearOpMode {
 //
 //        setAllPower(0);
 
-        runToJuncao();
-
+//        runToJuncao();
+        while(opModeIsActive()){
+            juncaoInit2();
+        }
 //        searchingJunction();
 
         telemetry.addData("Eixo X:\t", eixoX_juncao);
@@ -243,9 +245,8 @@ public class Autoteste extends LinearOpMode {
 //        while (1 > 0) {
 //            telemetry.addData("Eixo x Junção:\t", borderLeftX * CAMERA_WIDTH * CAMERA_HEIGHT);
 //            telemetry.update();
-        }
-
     }
+
 
     public void statusGarra(boolean status) {
 
@@ -261,87 +262,87 @@ public class Autoteste extends LinearOpMode {
         servoGarra2.setPosition(position_E);             //Esquerda
     }
 
-    public void searchingJunction() {
-        double motorPower = 0.2, erro = Math.abs(firstAngRotation - getAbsoluteAngle());
-
-        do {
-            TurnPIDController pid = new TurnPIDController(firstAngRotation, 0.01, 0, 0.003);
-            telemetry.setMsTransmissionInterval(50);
-
-            motorPower = 0.4;
-            erro = Math.abs(firstAngRotation - getAbsoluteAngle());
-
-            distanceF = distanceSensorB.getDistance(DistanceUnit.CM);
-
-            if (erro > 0.8) {
-                motorPower = (pid.update(getAbsoluteAngle()));
-                setMotorPowerIndiv(motorPower, motorPower, -motorPower, -motorPower);
-            } else {
-                setMotorPowerIndiv(-motorPower, motorPower, motorPower, -motorPower);
-            }
-
-            telemetry.addData("Erro:\t", Math.abs(firstAngRotation - getAbsoluteAngle()));
-            telemetry.addData("Distancia Frente:\t", distanceF);
-            telemetry.addData("First Ang Rotation:\t", firstAngRotation);
-            telemetry.update();
-            telemetry.addData("Erro:\t", Math.abs(firstAngRotation - getAbsoluteAngle()));
-
-        } while (distanceF > 10);
-
-
-        while (1 > 0) {
-
-            distanceF = distanceSensorB.getDistance(DistanceUnit.CM);
-
-            telemetry.addLine("FIM");
-            telemetry.addData("Distancia Frente:\t", distanceF);
-            telemetry.addData("First Ang Rotation:\t", firstAngRotation);
-            telemetry.update();
-
-            setAllPower(0);
-        }
-    }
-
-    //Gyro
-
-    public double getAbsoluteAngle() {
-        return imu.getAngularOrientation(
-                AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES
-        ).firstAngle;
-    }
-
-    public void turnPID(double degrees) {
-
-        firstAngRotation = degrees + getAbsoluteAngleVariable;
-
-        turnToPID(degrees + getAbsoluteAngleVariable);
-    }
-
-    void turnToPID(double targetAngle) {
-        TurnPIDController pid = new TurnPIDController(targetAngle, 0.01, 0, 0.003);
-        telemetry.setMsTransmissionInterval(50);
-        // Checking lastSlope to make sure that it's not oscillating when it quits
-        while (Math.abs(targetAngle - getAbsoluteAngle()) > 0.5 || pid.getLastSlope() > 0.75) {
-            double motorPower = pid.update(getAbsoluteAngle());
-
-            setMotorPowerIndiv(motorPower, motorPower, -motorPower, -motorPower);
-
-//            telemetry.addData("Current Angle", getAbsoluteAngle());
-//            telemetry.addData("Target Angle", targetAngle);
-//            telemetry.addData("Slope", pid.getLastSlope());
-//            telemetry.addData("Power", motorPower);
-
-            telemetry.addData("Erro Normal", targetAngle - getAbsoluteAngle());
-            telemetry.addData("Erro Abs", (Math.abs(targetAngle - getAbsoluteAngle())));
-            telemetry.update();
-
-            if ((Math.abs(targetAngle - getAbsoluteAngle())) == 360 && angBooleanInit) break;
-            if ((Math.abs(targetAngle - getAbsoluteAngle())) == 360) {
-                angBooleanInit = true;
-            }
-        }
-        setAllPower(0);
-    }
+//    public void searchingJunction() {
+//        double motorPower = 0.2, erro = Math.abs(firstAngRotation - getAbsoluteAngle());
+//
+//        do {
+//            TurnPIDController pid = new TurnPIDController(firstAngRotation, 0.01, 0, 0.003);
+//            telemetry.setMsTransmissionInterval(50);
+//
+//            motorPower = 0.4;
+//            erro = Math.abs(firstAngRotation - getAbsoluteAngle());
+//
+//            distanceF = distanceSensorB.getDistance(DistanceUnit.CM);
+//
+//            if (erro > 0.8) {
+//                motorPower = (pid.update(getAbsoluteAngle()));
+//                setMotorPowerIndiv(motorPower, motorPower, -motorPower, -motorPower);
+//            } else {
+//                setMotorPowerIndiv(-motorPower, motorPower, motorPower, -motorPower);
+//            }
+//
+//            telemetry.addData("Erro:\t", Math.abs(firstAngRotation - getAbsoluteAngle()));
+//            telemetry.addData("Distancia Frente:\t", distanceF);
+//            telemetry.addData("First Ang Rotation:\t", firstAngRotation);
+//            telemetry.update();
+//            telemetry.addData("Erro:\t", Math.abs(firstAngRotation - getAbsoluteAngle()));
+//
+//        } while (distanceF > 10);
+//
+//
+//        while (1 > 0) {
+//
+//            distanceF = distanceSensorB.getDistance(DistanceUnit.CM);
+//
+//            telemetry.addLine("FIM");
+//            telemetry.addData("Distancia Frente:\t", distanceF);
+//            telemetry.addData("First Ang Rotation:\t", firstAngRotation);
+//            telemetry.update();
+//
+//            setAllPower(0);
+//        }
+//    }
+//
+//    //Gyro
+//
+//    public double getAbsoluteAngle() {
+//        return imu.getAngularOrientation(
+//                AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES
+//        ).firstAngle;
+//    }
+//
+//    public void turnPID(double degrees) {
+//
+//        firstAngRotation = degrees + getAbsoluteAngleVariable;
+//
+//        turnToPID(degrees + getAbsoluteAngleVariable);
+//    }
+//
+//    void turnToPID(double targetAngle) {
+//        TurnPIDController pid = new TurnPIDController(targetAngle, 0.01, 0, 0.003);
+//        telemetry.setMsTransmissionInterval(50);
+//        // Checking lastSlope to make sure that it's not oscillating when it quits
+//        while (Math.abs(targetAngle - getAbsoluteAngle()) > 0.5 || pid.getLastSlope() > 0.75) {
+//            double motorPower = pid.update(getAbsoluteAngle());
+//
+//            setMotorPowerIndiv(motorPower, motorPower, -motorPower, -motorPower);
+//
+////            telemetry.addData("Current Angle", getAbsoluteAngle());
+////            telemetry.addData("Target Angle", targetAngle);
+////            telemetry.addData("Slope", pid.getLastSlope());
+////            telemetry.addData("Power", motorPower);
+//
+//            telemetry.addData("Erro Normal", targetAngle - getAbsoluteAngle());
+//            telemetry.addData("Erro Abs", (Math.abs(targetAngle - getAbsoluteAngle())));
+//            telemetry.update();
+//
+//            if ((Math.abs(targetAngle - getAbsoluteAngle())) == 360 && angBooleanInit) break;
+//            if ((Math.abs(targetAngle - getAbsoluteAngle())) == 360) {
+//                angBooleanInit = true;
+//            }
+//        }
+//        setAllPower(0);
+//    }
 
     //Hardware Pushbot
 
@@ -459,377 +460,165 @@ public class Autoteste extends LinearOpMode {
         LMF.setPower(lF);
         LMB.setPower(lB);
     }
-
 //Processamento de Imagem:
 
-//    //-  Cone:
-//    public void idQRCode(){
-//
+//    public void JuncaoInit(){
+//        // OpenCV webcam
 //        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-//        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-//        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-//
-//        camera.setPipeline(aprilTagDetectionPipeline);
-//        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+//        //OpenCV Pipeline
+//        ContourPipeline myPipeline;
+//        webcam.setPipeline(myPipeline = new ContourPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
+//        // Configuration of Pipeline
+//        myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
+//        myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
+//        // Webcam Streaming
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
 //        {
 //            @Override
 //            public void onOpened()
 //            {
-//                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+//                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
 //            }
 //
 //            @Override
 //            public void onError(int errorCode)
 //            {
-//
 //            }
 //        });
 //
-//        telemetry.setMsTransmissionInterval(50);
 //
-//        /*
-//         * The INIT-loop:
-//         * This REPLACES waitForStart!
-//         */
-//        while (!isStarted() && !isStopRequested())
-//        {
-//            ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
+//        myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
 //
-//            if(currentDetections.size() != 0)
-//            {
-//                boolean tagFound = false;
-//
-//                for(AprilTagDetection tag : currentDetections)
-//                {
-//                    if(tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT)
-//                    {
-//                        tagOfInterest = tag;
-//                        tagFound = true;
-//                        break;
-//                    }
-//                }
-//
-//                if(tagFound)
-//                {
-//                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
-//                    tagToTelemetry(tagOfInterest);
-//                }
-//                else
-//                {
-//                    telemetry.addLine("Don't see tag of interest :(");
-//
-//                    if(tagOfInterest == null)
-//                    {
-//                        telemetry.addLine("(The tag has never been seen)");
-//                    }
-//                    else
-//                    {
-//                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-//                        tagToTelemetry(tagOfInterest);
-//                    }
-//                }
-//
-//            }
-//            else
-//            {
-//                telemetry.addLine("Don't see tag of interest :(");
-//
-//                if(tagOfInterest == null)
-//                {
-//                    telemetry.addLine("(The tag has never been seen)");
-//                }
-//                else
-//                {
-//                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-//                    tagToTelemetry(tagOfInterest);
-//                }
-//
-//            }
-//
-//            telemetry.update();
-////            sleep(20);
+//        if(myPipeline.error){
+//            telemetry.addData("Exception: ", myPipeline.debug);
 //        }
 //
-//        /*
-//         * The START command just came in: now work off the latest snapshot acquired
-//         * during the init loop.
-//         */
+//        testing(myPipeline);
 //
-//        /* Update the telemetry */
-//        if(tagOfInterest != null)
-//        {
-//            telemetry.addLine("Tag snapshot:\n");
-//            tagToTelemetry(tagOfInterest);
-//            telemetry.update();
-//        }
-//        else
-//        {
-//            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-//            telemetry.update();
-//        }
-//
-//        /* Actually do something useful */
-//        if (tagOfInterest == null || tagOfInterest.id == LEFT){
-//            //trajetoria
-//        }else if (tagOfInterest.id == MIDDLE){
-//            //trajetoria
-//        }else{
-//            //trajetoria
-//        }
+//        telemetry.update();
 //
 //
 //    }
 //
-//    void tagToTelemetry(AprilTagDetection detection)
-//    {
-//        id = detection.id;
-//        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-//        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-//        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-//        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-//        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-//        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-//        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
-    //}
+//    public void testing(ContourPipeline myPipeline){
+//        if(lowerruntime + 0.05 < getRuntime()){
+//            CrLowerUpdate += -gamepad1.left_stick_y;
+//            CbLowerUpdate += gamepad1.left_stick_x;
+//            lowerruntime = getRuntime();
+//        }
+//        if(upperruntime + 0.05 < getRuntime()){
+//            CrUpperUpdate += -gamepad1.right_stick_y;
+//            CbUpperUpdate += gamepad1.right_stick_x;
+//            upperruntime = getRuntime();
+//        }
+//
+//        CrLowerUpdate = inValues(CrLowerUpdate, 0, 255);
+//        CrUpperUpdate = inValues(CrUpperUpdate, 0, 255);
+//        CbLowerUpdate = inValues(CbLowerUpdate, 0, 255);
+//        CbUpperUpdate = inValues(CbUpperUpdate, 0, 255);
+//
+//        myPipeline.configureScalarLower(0.0, CrLowerUpdate, CbLowerUpdate);
+//        myPipeline.configureScalarUpper(255.0, CrUpperUpdate, CbUpperUpdate);
+//
+////        telemetry.addData("Eixo_x ", myPipeline.getRectMidpointXY().x);
+////        telemetry.addData("Eixo_y ", myPipeline.getRectMidpointXY().y);
+//
+//        eixoX_juncao = myPipeline.getRectMidpointXY().x;
+//        eixoY_juncao = myPipeline.getRectMidpointXY().y;
+//    }
+//
+//    public Double inValues(double value, double min, double max){
+//        if(value < min){ value = min; }
+//        if(value > max){ value = max; }
+//        return value;
+//    }
+
+//    public ContourPipeline CP(ContourPipeline input ){
+//
+//
+//        return input.processFrame;
+//    }
 
 
-    public class ContourPipeline extends OpenCvPipeline {
-        Scalar HOT_PINK = new Scalar(196, 23, 112);
+    public void juncaoInit2(){
+        // OpenCV webcam
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        //OpenCV Pipeline
+        ContourPipeline myPipeline;
+        webcam.setPipeline(myPipeline = new ContourPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
+        // Configuration of Pipeline
+        myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
+        myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
+        // Webcam Streaming
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+            }
 
-        public volatile boolean error = false;
-        public volatile Exception debug;
+            @Override
+            public void onError(int errorCode)
+            {
+            }
+        });
 
-        private double borderLeftX;     //fraction of pixels from the left side of the cam to skip
-        private double borderRightX;    //fraction of pixels from the right of the cam to skip
-        private double borderTopY;      //fraction of pixels from the top of the cam to skip
-        private double borderBottomY;   //fraction of pixels from the bottom of the cam to skip
+        telemetry.update();
+        waitForStart();
 
-        private int CAMERA_WIDTH;
-        private int CAMERA_HEIGHT;
+        while (opModeIsActive()) {
+            webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
 
-        private int loopCounter = 0;
-        private int pLoopCounter = 0;
-
-        private final Mat mat = new Mat();
-        private final Mat processed = new Mat();
-
-        private Rect maxRect = new Rect(600, 1, 1, 1);
-
-        private double maxArea = 0;
-        private boolean first = false;
-
-        private final Object sync = new Object();
-
-        public ContourPipeline(double borderLeftX, double borderRightX, double borderTopY, double borderBottomY) {
-            this.borderLeftX = borderLeftX;
-            this.borderRightX = borderRightX;
-            this.borderTopY = borderTopY;
-            this.borderBottomY = borderBottomY;
-        }
-
-        public void configureScalarLower(double y, double cr, double cb) {
-            scalarLowerYCrCb = new Scalar(y, cr, cb);
-        }
-
-        public void configureScalarUpper(double y, double cr, double cb) {
-            scalarUpperYCrCb = new Scalar(y, cr, cb);
-        }
-
-        public void configureScalarLower(int y, int cr, int cb) {
-            scalarLowerYCrCb = new Scalar(y, cr, cb);
-        }
-
-        public void configureScalarUpper(int y, int cr, int cb) {
-            scalarUpperYCrCb = new Scalar(y, cr, cb);
-        }
-
-        public void configureBorders(double borderLeftX, double borderRightX, double borderTopY, double borderBottomY) {
-            this.borderLeftX = borderLeftX;
-            this.borderRightX = borderRightX;
-            this.borderTopY = borderTopY;
-            this.borderBottomY = borderBottomY;
-        }
-
-
-        public void JuncaoInit() {
-            // OpenCV webcam
-            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-            //OpenCV Pipeline
-            contourPipeline myPipeline;
-            webcam.setPipeline(myPipeline = new contourPipeline(borderLeftX, borderRightX, borderTopY, borderBottomY));
-            // Configuration of Pipeline
-            myPipeline.configureScalarLower(scalarLowerYCrCb.val[0], scalarLowerYCrCb.val[1], scalarLowerYCrCb.val[2]);
-            myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0], scalarUpperYCrCb.val[1], scalarUpperYCrCb.val[2]);
-            // Webcam Streaming
-            webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-                    webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
-                }
-
-                @Override
-                public void onError(int errorCode) {
-                }
-            });
-
-
-            myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
-
-            if (myPipeline.error) {
+            //myPipeline.configureBorders(borderLeftX, borderRightX, borderTopY, borderBottomY);
+            if(myPipeline.error){
                 telemetry.addData("Exception: ", myPipeline.debug);
             }
-
+            // Only use this line of the code when you want to find the lower and upper values
             testing(myPipeline);
 
+
+            //  telemetry.addData("RectArea: ", myPipeline.getRectArea());
             telemetry.update();
-
-
-        }
-
-        public void testing(contourPipeline myPipeline) {
-        }
-
-        @Override
-        public Mat processFrame(Mat input) {
-            CAMERA_WIDTH = input.width();
-            CAMERA_HEIGHT = input.height();
-            try {
-                // Process Image
-                Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2YCrCb);
-                Core.inRange(mat, scalarLowerYCrCb, scalarUpperYCrCb, processed);
-                // Remove Noise
-                Imgproc.morphologyEx(processed, processed, Imgproc.MORPH_OPEN, new Mat());
-                Imgproc.morphologyEx(processed, processed, Imgproc.MORPH_CLOSE, new Mat());
-                // GaussianBlur
-                Imgproc.GaussianBlur(processed, processed, new Size(5.0, 15.0), 0.00);
-                // Find Contours
-                List<MatOfPoint> contours = new ArrayList<>();
-                Imgproc.findContours(processed, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-
-                // Draw Contours
-                Imgproc.drawContours(input, contours, -1, new Scalar(255, 0, 0));
-
-                // Lock this up to prevent errors when outside threads access the max rect property.
-                synchronized (sync) {
-                    // Loop Through Contours
-                    for (MatOfPoint contour : contours) {
-                        Point[] contourArray = contour.toArray();
-
-                        // Bound Rectangle if Contour is Large Enough
-                        if (contourArray.length >= 15) {
-                            MatOfPoint2f areaPoints = new MatOfPoint2f(contourArray);
-                            Rect rect = Imgproc.boundingRect(areaPoints);
-
-                            if (rect.area() > maxArea
-                                    && rect.x + (rect.width / 2.0) > (borderLeftX * CAMERA_WIDTH)
-                                    && rect.x + (rect.width / 2.0) < CAMERA_WIDTH - (borderRightX * CAMERA_WIDTH)
-                                    && rect.y + (rect.height / 2.0) > (borderTopY * CAMERA_HEIGHT)
-                                    && rect.y + (rect.height / 2.0) < CAMERA_HEIGHT - (borderBottomY * CAMERA_HEIGHT)
-
-                                    || loopCounter - pLoopCounter > 6
-                                    && rect.x + (rect.width / 2.0) > (borderLeftX * CAMERA_WIDTH)
-                                    && rect.x + (rect.width / 2.0) < CAMERA_WIDTH - (borderRightX * CAMERA_WIDTH)
-                                    && rect.y + (rect.height / 2.0) > (borderTopY * CAMERA_HEIGHT)
-                                    && rect.y + (rect.height / 2.0) < CAMERA_HEIGHT - (borderBottomY * CAMERA_HEIGHT)
-                            ) {
-                                maxArea = rect.area();
-                                maxRect = rect;
-                                pLoopCounter++;
-                                loopCounter = pLoopCounter;
-                                first = true;
-                            } else if (loopCounter - pLoopCounter > 10) {
-                                maxArea = new Rect().area();
-                                maxRect = new Rect();
-                            }
-
-                            areaPoints.release();
-                        }
-                        contour.release();
-                    }
-                    if (contours.isEmpty()) {
-                        maxRect = new Rect(600, 1, 1, 1);
-                    }
-                }
-                // Draw Rectangles If Area Is At Least 500
-                if (first && maxRect.area() > 500) {
-                    Imgproc.rectangle(input, maxRect, new Scalar(0, 255, 0), 2);
-                }
-                // Draw Borders
-                Imgproc.rectangle(input, new Rect(
-                        (int) (borderLeftX * CAMERA_WIDTH),
-                        (int) (borderTopY * CAMERA_HEIGHT),
-                        (int) (CAMERA_WIDTH - (borderRightX * CAMERA_WIDTH) - (borderLeftX * CAMERA_WIDTH)),
-                        (int) (CAMERA_HEIGHT - (borderBottomY * CAMERA_HEIGHT) - (borderTopY * CAMERA_HEIGHT))
-                ), HOT_PINK, 2);
-
-                // Display Data
-                Imgproc.putText(input, "Area: " + getRectArea() + " Midpoint: " + getRectMidpointXY().x + " , " + getRectMidpointXY().y, new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2);
-
-                loopCounter++;
-            } catch (Exception e) {
-                debug = e;
-                error = true;
-            }
-            return input;
-        }
-    /*
-    Synchronize these operations as the user code could be incorrect otherwise, i.e a property is read
-    while the same rectangle is being processed in the pipeline, leading to some values being not
-    synced.
-     */
-
-        public int getRectHeight() {
-            synchronized (sync) {
-                return maxRect.height;
-            }
-        }
-
-        public int getRectWidth() {
-            synchronized (sync) {
-                return maxRect.width;
-            }
-        }
-
-        public int getRectX() {
-            synchronized (sync) {
-                return maxRect.x;
-            }
-        }
-
-        public int getRectY() {
-            synchronized (sync) {
-                return maxRect.y;
-            }
-        }
-
-        public double getRectMidpointX() {
-            synchronized (sync) {
-                return getRectX() + (getRectWidth() / 2.0);
-            }
-        }
-
-        public double getRectMidpointY() {
-            synchronized (sync) {
-                return getRectY() + (getRectHeight() / 2.0);
-            }
-        }
-
-        public Point getRectMidpointXY() {
-            synchronized (sync) {
-                return new Point(getRectMidpointX(), getRectMidpointY());
-            }
-        }
-
-        public double getAspectRatio() {
-            synchronized (sync) {
-                return getRectArea() / (CAMERA_HEIGHT * CAMERA_WIDTH);
-            }
-        }
-
-        public double getRectArea() {
-            synchronized (sync) {
-                return maxRect.area();
-            }
         }
     }
+    public void testing(ContourPipeline myPipeline){
+        if(lowerruntime + 0.05 < getRuntime()){
+            CrLowerUpdate += -gamepad1.left_stick_y;
+            CbLowerUpdate += gamepad1.left_stick_x;
+            lowerruntime = getRuntime();
+        }
+        if(upperruntime + 0.05 < getRuntime()){
+            CrUpperUpdate += -gamepad1.right_stick_y;
+            CbUpperUpdate += gamepad1.right_stick_x;
+            upperruntime = getRuntime();
+        }
+
+        CrLowerUpdate = inValues(CrLowerUpdate, 0, 255);
+        CrUpperUpdate = inValues(CrUpperUpdate, 0, 255);
+        CbLowerUpdate = inValues(CbLowerUpdate, 0, 255);
+        CbUpperUpdate = inValues(CbUpperUpdate, 0, 255);
+
+        myPipeline.configureScalarLower(0.0, CrLowerUpdate, CbLowerUpdate);
+        myPipeline.configureScalarUpper(255.0, CrUpperUpdate, CbUpperUpdate);
+
+
+//        telemetry.addData("lowerCr ", (int)CrLowerUpdate);
+//        telemetry.addData("lowerCb ", (int)CbLowerUpdate);
+//        telemetry.addData("UpperCr ", (int)CrUpperUpdate);
+//        telemetry.addData("UpperCb ", (int)CbUpperUpdate);
+//        telemetry.addData("X/Y", ("Area: " + myPipeline.getRectArea() + " Midpoint: " + myPipeline.getRectMidpointXY().x + " , " + myPipeline.getRectMidpointXY().y, new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2));
+        telemetry.addData("Eixo_x: ", myPipeline.getRectMidpointXY().x);
+        telemetry.addData("Eixo_y: ", myPipeline.getRectMidpointXY().y);
+        telemetry.update();
+
+    }
+
+    public Double inValues(double value, double min, double max){
+        if(value < min){ value = min; }
+        if(value > max){ value = max; }
+        return value;
+    }
+}
